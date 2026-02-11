@@ -34,6 +34,15 @@ body {
   animation: fadeIn 1s ease-out;
 }
 
+#question {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  backdrop-filter: blur(20px);
+}
+
 .login-container {
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
@@ -50,7 +59,9 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  
+  color: var(--text-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 2rem;
   letter-spacing: -0.02em;
@@ -143,6 +154,17 @@ body {
   border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
+}
+
+#blackbox-in-ide {
+  font-family: 'Segoe UI', 'Monaco', monospace;
+  color: var(--text-secondary);
+}
+
+#blackbox-result {
+  font-family: 'Segoe UI', 'Monaco', monospace;
+  color: var(--text-primary);
+  background: rgba(0,0,0,0.02);
 }
 
 .panel-header {
@@ -281,4 +303,21 @@ body {
 .run-btn:active {
   transform: translateY(0);
 }
+
+.undo-btn {
+  position: absolute;
+  top: 12px;
+  right: 7.5rem;
+  padding: 0.5rem 0.9rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+.undo-btn:hover { transform: translateY(-2px); color: var(--text-primary); }
+.undo-btn:disabled { opacity: 0.45; cursor: default; }
 
