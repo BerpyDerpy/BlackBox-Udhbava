@@ -1,13 +1,72 @@
 let editor;
+let _history = []; // simple stack of previous code versions
+
+function pushHistory(code) {
+  try {
+    if (typeof code !== 'string') return;
+    _history.push(code);
+    // limit history size
+    if (_history.length > 50) _history.shift();
+    updateUndoButton();
+  } catch (e) { /* ignore */ }
+}
+
+function updateUndoButton() {
+  const btn = document.getElementById('undo-btn');
+  if (!btn) return;
+  btn.disabled = _history.length === 0;
+}
+
+function undoEdit() {
+  if (_history.length === 0) return;
+  const prev = _history.pop();
+  // set editor or textarea
+  if (editor && typeof editor.setValue === 'function') {
+    editor.setValue(prev);
+  } else {
+    const ta = document.getElementById('script');
+    if (ta) ta.value = prev;
+  }
+  updateUndoButton();
+}
 
 function login() {
   const rollno = document.getElementById('rollno').value.trim();
   if (rollno) {
     localStorage.setItem('rollno', rollno);
+    // show question page first (open blackbox)
     document.getElementById('login').style.display = 'none';
-    document.getElementById('ide').style.display = 'flex';
-    document.getElementById('user-rollno').textContent = rollno;
-    setTimeout(initEditor, 300);
+    document.getElementById('question').style.display = 'flex';
+    const userRoll = document.getElementById('user-rollno');
+    if (userRoll) userRoll.textContent = rollno;
+    loadBlackBox();
+  }
+}
+
+function enterIDE() {
+  document.getElementById('question').style.display = 'none';
+  document.getElementById('ide').style.display = 'flex';
+  const rollno = localStorage.getItem('rollno');
+  const userRoll = document.getElementById('user-rollno');
+  if (userRoll && rollno) userRoll.textContent = rollno;
+  // initialize editor after a short delay so layout stabilizes
+  setTimeout(initEditor, 300);
+}
+
+async function loadBlackBox() {
+  try {
+    const res = await fetch('blackbox.txt');
+    if (!res.ok) throw new Error('Not found');
+    const txt = await res.text();
+    const el = document.getElementById('blackbox');
+    const el2 = document.getElementById('blackbox-in-ide');
+    if (el) el.textContent = txt;
+    if (el2) el2.textContent = txt;
+  } catch (e) {
+    const el = document.getElementById('blackbox');
+    const el2 = document.getElementById('blackbox-in-ide');
+    if (el) el.textContent = 'Unable to load question.';
+    if (el2) el2.textContent = 'Unable to load question.';
   }
 }
 
@@ -76,7 +135,34 @@ function initEditor() {
       });
     }
 
+    // track changes for undo: push previous snapshot (debounced)
+    function debounce(fn, ms = 400) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    }
+
+    let lastSnapshot = editor.getValue();
+    const maybePush = debounce(() => { pushHistory(lastSnapshot); lastSnapshot = editor.getValue(); }, 700);
+    editor.onDidChangeModelContent(() => {
+      maybePush();
+      // also keep textarea synced
+      const scriptTextarea = document.getElementById('script');
+      if (scriptTextarea) scriptTextarea.value = editor.getValue();
+    });
+
+    // Sync textarea -> editor when textarea is used
+    const scriptTextarea = document.getElementById('script');
+    if (scriptTextarea) {
+      let lastTa = scriptTextarea.value;
+      const taMaybePush = debounce(() => { pushHistory(lastTa); lastTa = scriptTextarea.value; }, 700);
+      scriptTextarea.addEventListener('input', () => {
+        if (editor) editor.setValue(scriptTextarea.value);
+        taMaybePush();
+      });
+    }
+
     console.log("✅ Monaco editor loaded successfully");
+    updateUndoButton();
   });
 }
 
@@ -123,11 +209,17 @@ async function runCode() {
 
     if (data.success) {
       document.getElementById('output').textContent = "Output:\n" + data.output;
+      const bres = document.getElementById('blackbox-result');
+      if (bres) bres.textContent = data.output || '';
     } else {
       document.getElementById('output').innerHTML = "Error:\n" + data.error;
+      const bres = document.getElementById('blackbox-result');
+      if (bres) bres.textContent = data.error || '';
     }
   } catch (err) {
     document.getElementById('output').innerHTML = "Backend not reachable";
+    const bres = document.getElementById('blackbox-result');
+    if (bres) bres.textContent = 'Backend not reachable';
   }
   console.log("Editor value:", editor?.getValue());
 }
