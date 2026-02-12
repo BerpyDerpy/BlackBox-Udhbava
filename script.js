@@ -49,7 +49,7 @@ async function login() {
       // show question page first (open blackbox)
       document.getElementById('login').style.display = 'none';
       document.getElementById('question').style.display = 'flex';
-      loadBlackBox('blackbox1.txt');
+      loadBlackBox();
     } catch (e) {
       alert('Login Error: ' + e.message);
     }
@@ -66,9 +66,9 @@ function enterIDE() {
   setTimeout(initEditor, 300);
 }
 
-async function loadBlackBox(filename = 'blackbox1.txt') {
+async function loadBlackBox() {
   try {
-    const res = await fetch(filename);
+    const res = await fetch('blackbox.txt');
     if (!res.ok) throw new Error('Not found');
     const txt = await res.text();
     const el = document.getElementById('blackbox');
@@ -83,10 +83,7 @@ async function loadBlackBox(filename = 'blackbox1.txt') {
   }
 }
 
-function changeBlackBoxFile() {
-  const file = document.getElementById('file-select').value;
-  loadBlackBox(file);
-}
+
 
 // function initEditor() {
 //   // require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.55.1/min/vs' } });
