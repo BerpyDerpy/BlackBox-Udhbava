@@ -47,6 +47,14 @@ async function login() {
 
       localStorage.setItem('rollno', rollno);
       // show question page first (open blackbox)
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('question').style.display = 'flex';
+      loadBlackBox('blackbox1.txt');
+    } catch (e) {
+      alert('Login Error: ' + e.message);
+    }
+  }
+}
 
 function enterIDE() {
   document.getElementById('question').style.display = 'none';
@@ -58,9 +66,9 @@ function enterIDE() {
   setTimeout(initEditor, 300);
 }
 
-async function loadBlackBox() {
+async function loadBlackBox(filename = 'blackbox1.txt') {
   try {
-    const res = await fetch('blackbox.txt');
+    const res = await fetch(filename);
     if (!res.ok) throw new Error('Not found');
     const txt = await res.text();
     const el = document.getElementById('blackbox');
@@ -73,6 +81,11 @@ async function loadBlackBox() {
     if (el) el.textContent = 'Unable to load question.';
     if (el2) el2.textContent = 'Unable to load question.';
   }
+}
+
+function changeBlackBoxFile() {
+  const file = document.getElementById('file-select').value;
+  loadBlackBox(file);
 }
 
 // function initEditor() {
@@ -125,7 +138,7 @@ function initEditor() {
   require(['vs/editor/editor.main'], function () {
     const languageSelect = document.getElementById('language-select');
     const selectedLanguage = languageSelect ? languageSelect.value : 'javascript';
-    
+
     editor = monaco.editor.create(document.getElementById('editor'), {
       value: document.getElementById('script').value,
       language: selectedLanguage,
@@ -136,7 +149,7 @@ function initEditor() {
 
     if (languageSelect) {
       languageSelect.addEventListener('change', (e) => {
-      monaco.editor.setModelLanguage(editor.getModel(), e.target.value);
+        monaco.editor.setModelLanguage(editor.getModel(), e.target.value);
       });
     }
 
@@ -174,16 +187,16 @@ function initEditor() {
 
 // function runCode() {
 //   const code = editor ? editor.getValue() : document.getElementById('script').value;
-  
+
 //   try {
 //     // Create iframe sandbox for safe execution (no UI feedback)
 //     const iframe = document.createElement('iframe');
 //     iframe.style.display = 'none';
 //     document.body.appendChild(iframe);
-    
+
 //     const iframeWin = iframe.contentWindow;
 //     iframeWin.eval(code);
-    
+
 //     document.body.removeChild(iframe);
 //     console.log('✅ Code executed successfully');
 //   } catch (error) {
@@ -234,7 +247,7 @@ async function runCode() {
 //   const rollno = localStorage.getItem('rollno');
 //   const answer = document.getElementById('answer').value.trim();
 //   const code = editor.getValue();
-  
+
 //   console.log('Submission:', { rollno, code, answer });
 //   alert(`✅ Submitted by ${rollno}\nAnswer: ${answer}`);
 //   document.getElementById('answer').value = '';
