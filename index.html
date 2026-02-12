@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IDE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="login">
+    <div class="login-container">
+      <h2>CodeLab IDE</h2>
+      <div class="input-group">
+        <svg class="input-icon" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <input type="text" id="rollno" class="input-field" placeholder="Enter Roll Number"><br>
+      </div>
+      <button class="btn-primary" onclick="login()">Enter IDE</button>
+    </div>
+  </div>
+
+  <!-- Question / Open file page (shown after login, before entering IDE) -->
+  <div id="question" style="display:none;">
+    <div class="login-container question-container">
+      <h2>Open Question</h2>
+      <div id="blackbox-display" style="text-align:left; margin-top:1rem; width:100%;">
+        <pre id="blackbox" style="white-space:pre-wrap; max-height:320px; overflow:auto; padding:1rem; background:rgba(0,0,0,0.25); border-radius:8px;">Loading question...</pre>
+      </div>
+      <div style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:center; width:100%;">
+        <button class="btn-primary" onclick="enterIDE()">Enter IDE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ide">
+    <div class="ide-header">
+      Welcome back, <span id="user-rollno"></span>
+    </div>
+    <div class="main-container">
+      <div id="script-panel">
+        <select id="file-select" onchange="changeBlackBoxFile()">
+  <option value="blackbox1.txt">BlackBox 1</option>
+  <option value="blackbox2.txt">BlackBox 2</option>
+  <option value="blackbox3.txt">BlackBox 3</option>
+</select>
+
+  <div class="panel-header">
+    📜 Script Input
+        <button id="undo-btn" class="undo-btn" onclick="undoEdit()" disabled>↶ Undo</button>
+        <button class="run-btn" onclick="runCode()">▶️ Run</button>
+  </div>
+  <div id="blackbox-in-ide" style="padding:0.75rem 1rem; white-space:pre-wrap; max-height:140px; overflow:auto; background:rgba(0,0,0,0.06); border-radius:8px; margin:0.75rem;">Loading blackbox...</div>
+  <textarea id="script" placeholder="Enter your script here...">// Sample script
+function solve(input) {
+  return input.split('').reverse().join('');
+}</textarea>
+  <div id="blackbox-result" style="padding:0.75rem 1rem; white-space:pre-wrap; max-height:140px; overflow:auto; background:rgba(0,0,0,0.04); border-radius:8px; margin:0.75rem;">Run output will appear here.</div>
+</div>
+
+      <div id="editor-container">
+        <select id="language-select">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+          <option value="cpp">C++</option>
+        </select>
+        <div id="editor" style="width:100%;height:100%;"></div>
+      </div>
+    </div>
+    <div id="submit-bar">
+      <input type="text" id="answer" placeholder="Enter your final answer or output">
+      <button class="btn-submit" onclick="submitAnswer()">Submit Solution</button>
+    </div>
+    <div id="output"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
