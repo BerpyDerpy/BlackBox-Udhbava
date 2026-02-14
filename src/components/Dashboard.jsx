@@ -29,6 +29,8 @@ export default function Dashboard({ user, onToggleAdmin, onLogout }) {
     const [levelStartTime, setLevelStartTime] = useState(Date.now())
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
     const [totalScore, setTotalScore] = useState(user.score || 0)
+    const [gameCompleted, setGameCompleted] = useState(false)
+    const [totalElapsed, setTotalElapsed] = useState(0)
 
     const workerRef = useRef(null)
 
@@ -73,13 +75,14 @@ clean_data()`
 
     // Timer — ticks every second
     useEffect(() => {
+        if (gameCompleted) return
         setLevelStartTime(Date.now())
         setElapsedSeconds(0)
         const interval = setInterval(() => {
             setElapsedSeconds(prev => prev + 1)
         }, 1000)
         return () => clearInterval(interval)
-    }, [currentLevel])
+    }, [currentLevel, gameCompleted])
 
     // Set starter code on mount / level change
     useEffect(() => {
@@ -164,7 +167,9 @@ clean_data()`
         const nextLevel = currentLevel + 1
         if (nextLevel > TOTAL_LEVELS) {
             addLog('> ★ ALL LEVELS COMPLETED! YOU HAVE MASTERED THE BLACK BOX.')
-            setSubmitFeedback({ type: 'success', msg: 'ALL LEVELS COMPLETED! CONGRATULATIONS, OPERATOR.' })
+            setTotalElapsed(elapsedSeconds)
+            setGameCompleted(true)
+            setSubmitFeedback(null)
             sfx.playSuccess()
             return
         }
@@ -219,12 +224,11 @@ clean_data()`
     }
 
 
-    // Effect: Close feedback automatically after a few seconds if it's just a message
+    // Effect: Auto-dismiss error feedback after 3 seconds
     useEffect(() => {
-        if (submitFeedback) {
+        if (submitFeedback && submitFeedback.type === 'error') {
             const timer = setTimeout(() => {
-                // Optional: Auto-dismiss feedback if desired, or keep until next action
-                // setSubmitFeedback(null) 
+                setSubmitFeedback(null)
             }, 3000)
             return () => clearTimeout(timer)
         }
@@ -310,6 +314,30 @@ clean_data()`
                     </div>
                 </div>
             </div>
+
+            {/* Game Completed Overlay */}
+            {gameCompleted && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md">
+                    <div className="p-10 border-2 border-green-500 bg-green-950/90 text-green-400 shadow-[0_0_80px_rgba(34,197,94,0.4)] max-w-lg w-full text-center">
+                        <div className="text-6xl mb-4">★</div>
+                        <h2 className="text-4xl font-bold mb-2 tracking-widest uppercase text-glow-strong">
+                            MISSION COMPLETE
+                        </h2>
+                        <p className="text-green-600 text-sm tracking-wider mb-6">ALL SYSTEMS RECOVERED</p>
+
+                        <div className="border border-green-900/50 bg-black/40 p-6 mb-6">
+                            <p className="text-sm text-green-700 tracking-wider mb-2">FINAL SCORE</p>
+                            <p className="text-5xl font-bold text-yellow-400 score-shimmer mb-4">{totalScore} PTS</p>
+                            <div className="flex justify-center gap-8 text-xs text-green-600 tracking-wider">
+                                <span>LEVELS: {TOTAL_LEVELS}/{TOTAL_LEVELS}</span>
+                                <span>TIME: {formatTime(totalElapsed)}</span>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-green-800 tracking-wider">CONGRATULATIONS, OPERATOR {user.rollNo}</p>
+                    </div>
+                </div>
+            )}
 
             {/* Full Screen Feedback Overlay */}
             {submitFeedback && (
