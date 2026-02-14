@@ -4,24 +4,24 @@
 
 export const LEVEL_META = {
     1: {
-        file: '/levels/level1.txt',
+        file: '/levels/level1_easy.txt',
         label: 'EASY',
-        hint: 'Identify the timestamp of the anomalous reading',
-        keywords: ['t:1005', '1005', 'hydraulic'],
+        hint: 'Strip the noise, extract the values, and find the timestamp of the thermal spike.',
+        keywords: ['1404', '1405', 'temp', 'temperature', 'motor'],
     },
     2: {
-        file: '/levels/level2.txt',
+        file: '/levels/level2_medium.txt',
         label: 'MEDIUM',
-        hint: 'Identify which sensor experienced cascading failure',
-        keywords: ['gyro', 'gyroscope'],
+        hint: 'Decode the hexadecimal payloads and graph or calculate the delta between the two values to find the physical anomaly.',
+        keywords: ['oscillation', 'resonance', 'instability', 'pogo', '1.500', '1.5'],
     },
     3: {
-        file: '/levels/level3.txt',
+        file: '/levels/level3_hard.txt',
         label: 'HARD',
-        hint: 'Identify the timestamp when the cascade failure began',
-        keywords: ['t:3004', '3004'],
+        hint: 'Filter for the ALPHA unit and mathematically compare its local telemetry timestamps against the main server timestamps.',
+        keywords: ['drift', 'desync', 'clock', 'time', 'sync', 'synchronization'],
     },
-}
+};
 
 export const TOTAL_LEVELS = Object.keys(LEVEL_META).length
 

@@ -4,7 +4,7 @@ import CodeEditor from './Editor'
 import TerminalOutput from './Terminal'
 import ActionBar from './ActionBar'
 import HelpModal from './HelpModal'
-import { LEVEL_META, TOTAL_LEVELS, MOCK_TERMINAL_WELCOME, loadLevelLog, checkAnswer } from '../lib/mockData'
+import { LEVEL_META, TOTAL_LEVELS, MOCK_TERMINAL_WELCOME, loadLevelLog, checkAnswer } from '../lib/LevelData'
 import { supabase } from '../lib/supabase'
 import { Shield, LogOut, HelpCircle, Timer, Trophy } from 'lucide-react'
 
