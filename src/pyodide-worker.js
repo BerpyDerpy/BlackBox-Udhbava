@@ -3,7 +3,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js");
 
 async function loadPyodideAndPackages() {
     self.pyodide = await loadPyodide();
-    // await self.pyodide.loadPackage(["numpy", "pandas"]); // Unlock if needed later
+    self.postMessage({ type: 'READY' });
 }
 
 let pyodideReadyPromise = loadPyodideAndPackages();
