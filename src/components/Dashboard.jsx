@@ -3,15 +3,22 @@ import LogViewer from './LogViewer'
 import CodeEditor from './Editor'
 import TerminalOutput from './Terminal'
 import ActionBar from './ActionBar'
-import { CORRUPTED_LOG, MOCK_TERMINAL_WELCOME } from '../lib/mockData'
+import { LEVEL_DATA, MOCK_TERMINAL_WELCOME } from '../lib/mockData'
+import { Shield, LogOut } from 'lucide-react'
 
-export default function Dashboard({ user }) {
+export default function Dashboard({ user, onToggleAdmin, onLogout }) {
+    const level = user.level || 1
+    const levelData = LEVEL_DATA[level] || LEVEL_DATA[1]
+    const corruptedLog = levelData.log
+
     const [showCleaned, setShowCleaned] = useState(false)
     const [canToggleCleaned, setCanToggleCleaned] = useState(false)
     const [executing, setExecuting] = useState(false)
     const [pyodideReady, setPyodideReady] = useState(false)
     const [logs, setLogs] = useState([MOCK_TERMINAL_WELCOME])
     const [code, setCode] = useState(`# Write your Python script here to parse the corrupted log
+# Difficulty: ${levelData.label}
+# Hint: ${levelData.hint}
 
 # The variable 'raw_log_data' contains the input string.
 # Print your process to stdout.
@@ -25,6 +32,8 @@ def clean_data():
 
 clean_data()`)
     const [cleanedData, setCleanedData] = useState("")
+    const [answer, setAnswer] = useState("")
+    const [submitFeedback, setSubmitFeedback] = useState(null) // { type: 'success'|'error', msg: '' }
 
     const workerRef = useRef(null)
 
@@ -40,7 +49,6 @@ clean_data()`)
                 addLog('> SYSTEM: Python runtime loaded. Ready.');
             } else if (type === 'SUCCESS') {
                 if (stdout) {
-                    // Split multi-line stdout into separate log entries
                     stdout.split('\n').filter(Boolean).forEach(line => addLog(line));
                 }
                 if (result !== undefined && result !== null) {
@@ -75,20 +83,34 @@ clean_data()`)
         if (executing) return
 
         setExecuting(true)
-        // Clear previous execution output but keep welcome message
         setLogs(prev => [prev[0], `> EXEC: Running script.py...`])
         setCanToggleCleaned(false);
+        setSubmitFeedback(null);
 
         if (workerRef.current) {
             workerRef.current.postMessage({
                 pythonCode: code,
-                rawLogData: CORRUPTED_LOG
+                rawLogData: corruptedLog
             });
         }
-    }, [executing, code])
+    }, [executing, code, corruptedLog])
 
     const handleSubmit = () => {
-        alert("Submission received! (Mock)")
+        if (!answer.trim()) {
+            setSubmitFeedback({ type: 'error', msg: 'ENTER YOUR ANSWER FIRST' })
+            return
+        }
+
+        const userAnswer = answer.trim().toUpperCase()
+        const correctAnswer = levelData.answer.trim().toUpperCase()
+
+        if (userAnswer === correctAnswer) {
+            setSubmitFeedback({ type: 'success', msg: `CORRECT! ANOMALY IDENTIFIED: ${correctAnswer}` })
+            addLog(`> ✓ SUBMISSION ACCEPTED: ${correctAnswer}`)
+        } else {
+            setSubmitFeedback({ type: 'error', msg: `INCORRECT. "${userAnswer}" IS NOT THE ANOMALY. TRY AGAIN.` })
+            addLog(`> ✗ SUBMISSION REJECTED: "${userAnswer}" does not match.`)
+        }
     }
 
     return (
@@ -103,7 +125,12 @@ clean_data()`)
                         OPERATOR: {user.rollNo}
                     </span>
                     <span className="text-green-800">│</span>
-                    <span className="text-green-700 tracking-wider">LEVEL: {user.level}</span>
+                    <span className="text-green-700 tracking-wider">LEVEL: {level}</span>
+                    <span className="text-green-800">│</span>
+                    <span className={`tracking-wider ${level === 1 ? 'text-green-500' : level === 2 ? 'text-yellow-500' : 'text-red-500'
+                        }`}>
+                        DIFFICULTY: {levelData.label}
+                    </span>
                 </div>
                 <div className="flex items-center space-x-3">
                     {!pyodideReady && (
@@ -111,6 +138,24 @@ clean_data()`)
                             ⟳ LOADING PYTHON RUNTIME...
                         </span>
                     )}
+                    {onToggleAdmin && (
+                        <button
+                            onClick={onToggleAdmin}
+                            className="flex items-center space-x-1.5 text-yellow-600 hover:text-yellow-400 transition-colors px-2 py-1 border border-yellow-900/30 hover:border-yellow-600/50 rounded-sm"
+                            title="Admin Panel"
+                        >
+                            <Shield className="w-3 h-3" />
+                            <span className="tracking-wider text-[10px]">ADMIN</span>
+                        </button>
+                    )}
+                    <button
+                        onClick={onLogout}
+                        className="flex items-center space-x-1.5 text-red-700 hover:text-red-500 transition-colors px-2 py-1 border border-red-900/20 hover:border-red-700/50 rounded-sm"
+                        title="Logout"
+                    >
+                        <LogOut className="w-3 h-3" />
+                        <span className="tracking-wider text-[10px]">EXIT</span>
+                    </button>
                     <div className="flex items-center space-x-1.5">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_6px_rgba(0,255,65,0.5)]" />
                         <span className="text-green-600 tracking-wider">ONLINE</span>
@@ -118,13 +163,34 @@ clean_data()`)
                 </div>
             </div>
 
+            {/* Submit Feedback Banner */}
+            {submitFeedback && (
+                <div className={`px-4 py-2.5 text-sm font-bold tracking-wider flex items-center justify-between relative z-10 ${submitFeedback.type === 'success'
+                        ? 'bg-green-950/50 border-b border-green-700/40 text-green-400'
+                        : 'bg-red-950/50 border-b border-red-700/40 text-red-400'
+                    }`}>
+                    <span>
+                        <span className={submitFeedback.type === 'success' ? 'text-green-600' : 'text-red-600'}>
+                            [{submitFeedback.type === 'success' ? 'SUCCESS' : 'FAILED'}]:
+                        </span>{' '}
+                        {submitFeedback.msg}
+                    </span>
+                    <button
+                        onClick={() => setSubmitFeedback(null)}
+                        className="text-green-800 hover:text-green-400 transition-colors text-lg leading-none"
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
+
             {/* Main Workspace */}
             <div className="flex-1 flex overflow-hidden min-h-0">
 
                 {/* Left Pane: Log Viewer */}
                 <div className="w-1/2 h-full">
                     <LogViewer
-                        originalData={CORRUPTED_LOG}
+                        originalData={corruptedLog}
                         cleanedData={cleanedData}
                         showCleaned={showCleaned}
                         onToggle={() => setShowCleaned(!showCleaned)}
@@ -150,6 +216,9 @@ clean_data()`)
                 loading={executing}
                 onSubmit={handleSubmit}
                 isExecutionFinished={canToggleCleaned}
+                answer={answer}
+                onAnswerChange={setAnswer}
+                hint={levelData.hint}
             />
         </div>
     )

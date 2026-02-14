@@ -1,6 +1,6 @@
-import { Play, Send, Zap, Loader2 } from 'lucide-react'
+import { Play, Send, Zap, Loader2, HelpCircle } from 'lucide-react'
 
-export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinished }) {
+export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinished, answer, onAnswerChange, hint }) {
     return (
         <div className="h-14 border-t border-green-900/40 bg-gray-950/90 flex items-center justify-between px-4 backdrop-blur-md relative shrink-0">
             <div className="noise-overlay" />
@@ -23,11 +23,21 @@ export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinishe
 
             {/* Submission Area */}
             <div className="flex items-center space-x-3 w-1/2 justify-end relative z-10">
+                {/* Hint */}
+                {hint && (
+                    <div className="flex items-center space-x-1 text-[10px] text-green-800 max-w-[180px]" title={hint}>
+                        <HelpCircle className="w-3 h-3 shrink-0" />
+                        <span className="truncate tracking-wider">{hint}</span>
+                    </div>
+                )}
+
                 <div className="relative w-full max-w-xs group">
                     <Zap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-800 group-focus-within:text-green-400 transition-colors" />
                     <input
                         type="text"
-                        placeholder="IDENTIFY ANOMALY (e.g. TMP:99)"
+                        value={answer}
+                        onChange={(e) => onAnswerChange(e.target.value.toUpperCase())}
+                        placeholder="IDENTIFY ANOMALY >"
                         className="w-full bg-black/70 border border-green-900/30 rounded-sm py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-green-500/60 focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] text-green-300 placeholder-green-900/40 transition-all duration-300"
                     />
                 </div>

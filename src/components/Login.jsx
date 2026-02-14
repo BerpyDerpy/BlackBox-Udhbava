@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase, ADMIN_ROLL_NO } from '../lib/supabase'
 import { Terminal, Lock, Shield } from 'lucide-react'
 
 export default function Login({ onLogin }) {
@@ -18,14 +18,24 @@ export default function Login({ onLogin }) {
             const { data, error: dbError } = await supabase
                 .from('users')
                 .select('*')
-                .eq('roll_no', rollNo)
+                .eq('roll_no', rollNo.trim())
                 .maybeSingle()
 
             if (dbError) {
-                console.warn("Supabase Error (Ignored for Proto):", dbError)
+                console.error("Supabase Error:", dbError)
+                throw new Error('DATABASE CONNECTION FAILED')
             }
 
-            onLogin({ rollNo, level: data?.current_level || 1 })
+            // REJECT if user not found in the database
+            if (!data) {
+                throw new Error('ACCESS DENIED: UNAUTHORIZED ID')
+            }
+
+            onLogin({
+                rollNo: data.roll_no,
+                level: data.current_level || 1,
+                isAdmin: data.roll_no === ADMIN_ROLL_NO,
+            })
 
         } catch (err) {
             setError(err.message)
