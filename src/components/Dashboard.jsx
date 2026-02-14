@@ -3,8 +3,10 @@ import LogViewer from './LogViewer'
 import CodeEditor from './Editor'
 import TerminalOutput from './Terminal'
 import ActionBar from './ActionBar'
+import HelpModal from './HelpModal'
 import { LEVEL_META, TOTAL_LEVELS, MOCK_TERMINAL_WELCOME, loadLevelLog, checkAnswer } from '../lib/mockData'
-import { Shield, LogOut } from 'lucide-react'
+import { supabase } from '../lib/supabase'
+import { Shield, LogOut, HelpCircle, Timer, Trophy } from 'lucide-react'
 
 export default function Dashboard({ user, onToggleAdmin, onLogout }) {
     const [currentLevel, setCurrentLevel] = useState(user.level || 1)
@@ -22,6 +24,10 @@ export default function Dashboard({ user, onToggleAdmin, onLogout }) {
     const [cleanedData, setCleanedData] = useState("")
     const [answer, setAnswer] = useState("")
     const [submitFeedback, setSubmitFeedback] = useState(null)
+    const [showHelp, setShowHelp] = useState(false)
+    const [levelStartTime, setLevelStartTime] = useState(Date.now())
+    const [elapsedSeconds, setElapsedSeconds] = useState(0)
+    const [totalScore, setTotalScore] = useState(user.score || 0)
 
     const workerRef = useRef(null)
 
@@ -62,6 +68,16 @@ clean_data()`
                 }
             })
         return () => { cancelled = true }
+    }, [currentLevel])
+
+    // Timer — ticks every second
+    useEffect(() => {
+        setLevelStartTime(Date.now())
+        setElapsedSeconds(0)
+        const interval = setInterval(() => {
+            setElapsedSeconds(prev => prev + 1)
+        }, 1000)
+        return () => clearInterval(interval)
     }, [currentLevel])
 
     // Set starter code on mount / level change
@@ -127,6 +143,22 @@ clean_data()`
         }
     }, [executing, code, corruptedLog])
 
+    const calculateLevelScore = () => {
+        const seconds = Math.floor((Date.now() - levelStartTime) / 1000)
+        return Math.max(100, 1000 - seconds * 2)
+    }
+
+    const persistScore = async (newScore, nextLevel) => {
+        try {
+            await supabase
+                .from('users')
+                .update({ score: newScore, current_level: nextLevel })
+                .eq('roll_no', user.rollNo)
+        } catch (err) {
+            console.error('Failed to persist score:', err)
+        }
+    }
+
     const advanceLevel = () => {
         const nextLevel = currentLevel + 1
         if (nextLevel > TOTAL_LEVELS) {
@@ -149,6 +181,7 @@ clean_data()`
         if (saved) {
             const userData = JSON.parse(saved)
             userData.level = nextLevel
+            userData.score = totalScore
             localStorage.setItem('blackbox_user', JSON.stringify(userData))
         }
     }
@@ -160,10 +193,14 @@ clean_data()`
         }
 
         if (checkAnswer(answer, currentLevel)) {
-            setSubmitFeedback({ type: 'success', msg: `CORRECT! ANOMALY IDENTIFIED.` })
-            addLog(`> ✓ SUBMISSION ACCEPTED`)
+            const levelScore = calculateLevelScore()
+            const newTotal = totalScore + levelScore
+            setTotalScore(newTotal)
+            setSubmitFeedback({ type: 'success', msg: `CORRECT! +${levelScore} PTS (${formatTime(elapsedSeconds)})` })
+            addLog(`> ✓ SUBMISSION ACCEPTED — SCORE: +${levelScore}`)
 
-            // Advance after a short delay
+            // Persist to Supabase and advance
+            persistScore(newTotal, currentLevel + 1)
             setTimeout(() => advanceLevel(), 2000)
         } else {
             setSubmitFeedback({ type: 'error', msg: `INCORRECT. TRY AGAIN.` })
@@ -171,8 +208,16 @@ clean_data()`
         }
     }
 
+    const formatTime = (s) => {
+        const mins = String(Math.floor(s / 60)).padStart(2, '0')
+        const secs = String(s % 60).padStart(2, '0')
+        return `${mins}:${secs}`
+    }
+
     return (
         <div className="h-screen flex flex-col bg-black text-green-500 overflow-hidden relative">
+            {/* Help Modal */}
+            {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
             {/* CRT Scanline Overlay */}
             <div className="crt-overlay" />
 
@@ -184,6 +229,17 @@ clean_data()`
                     </span>
                     <span className="text-green-800">│</span>
                     <span className="text-green-700 tracking-wider">LEVEL: {currentLevel} / {TOTAL_LEVELS}</span>
+                    <span className="text-green-800">│</span>
+                    <span className="text-green-800">│</span>
+                    <span className="flex items-center gap-1.5 text-green-600 tracking-wider">
+                        <Timer className="w-3 h-3" />
+                        {formatTime(elapsedSeconds)}
+                    </span>
+                    <span className="text-green-800">│</span>
+                    <span className="flex items-center gap-1.5 text-yellow-500 tracking-wider">
+                        <Trophy className="w-3 h-3" />
+                        {totalScore} PTS
+                    </span>
                     <span className="text-green-800">│</span>
                     <span className={`tracking-wider ${currentLevel === 1 ? 'text-green-500' : currentLevel === 2 ? 'text-yellow-500' : 'text-red-500'
                         }`}>
@@ -201,6 +257,14 @@ clean_data()`
                             ⟳ LOADING LOG DATA...
                         </span>
                     )}
+                    <button
+                        onClick={() => setShowHelp(true)}
+                        className="flex items-center space-x-1.5 text-green-600 hover:text-green-400 transition-colors px-2 py-1 border border-green-900/30 hover:border-green-600/50 rounded-sm"
+                        title="Help / Rules"
+                    >
+                        <HelpCircle className="w-3 h-3" />
+                        <span className="tracking-wider text-[10px]">HELP</span>
+                    </button>
                     {onToggleAdmin && (
                         <button
                             onClick={onToggleAdmin}

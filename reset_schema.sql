@@ -6,7 +6,9 @@ CREATE TABLE public.users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     roll_no TEXT UNIQUE NOT NULL,
-    current_level INTEGER DEFAULT 1
+    current_level INTEGER DEFAULT 1,
+    score INTEGER DEFAULT 0,
+    level_start_time TIMESTAMP WITH TIME ZONE
 );
 
 -- Enable Row Level Security (RLS)

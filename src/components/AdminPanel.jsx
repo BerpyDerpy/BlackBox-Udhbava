@@ -186,6 +186,7 @@ export default function AdminPanel({ onBack }) {
                                 <span className="w-16">IDX</span>
                                 <span className="flex-1">ROLL_NO</span>
                                 <span className="w-20 text-center">LEVEL</span>
+                                <span className="w-20 text-center">SCORE</span>
                                 <span className="w-20 text-center">ACTION</span>
                             </div>
 
@@ -204,6 +205,7 @@ export default function AdminPanel({ onBack }) {
                                         )}
                                     </span>
                                     <span className="w-20 text-center text-green-600 text-sm">{user.current_level || 1}</span>
+                                    <span className="w-20 text-center text-yellow-500 text-sm">{user.score || 0}</span>
                                     <span className="w-20 text-center">
                                         {user.roll_no !== ADMIN_ROLL_NO && (
                                             <button
