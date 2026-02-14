@@ -3,22 +3,32 @@ import LogViewer from './LogViewer'
 import CodeEditor from './Editor'
 import TerminalOutput from './Terminal'
 import ActionBar from './ActionBar'
-import { LEVEL_DATA, MOCK_TERMINAL_WELCOME } from '../lib/mockData'
+import { LEVEL_META, TOTAL_LEVELS, MOCK_TERMINAL_WELCOME, loadLevelLog, checkAnswer } from '../lib/mockData'
 import { Shield, LogOut } from 'lucide-react'
 
 export default function Dashboard({ user, onToggleAdmin, onLogout }) {
-    const level = user.level || 1
-    const levelData = LEVEL_DATA[level] || LEVEL_DATA[1]
-    const corruptedLog = levelData.log
+    const [currentLevel, setCurrentLevel] = useState(user.level || 1)
+    const levelMeta = LEVEL_META[currentLevel] || LEVEL_META[1]
+
+    const [corruptedLog, setCorruptedLog] = useState('')
+    const [loadingLog, setLoadingLog] = useState(true)
 
     const [showCleaned, setShowCleaned] = useState(false)
     const [canToggleCleaned, setCanToggleCleaned] = useState(false)
     const [executing, setExecuting] = useState(false)
     const [pyodideReady, setPyodideReady] = useState(false)
     const [logs, setLogs] = useState([MOCK_TERMINAL_WELCOME])
-    const [code, setCode] = useState(`# Write your Python script here to parse the corrupted log
-# Difficulty: ${levelData.label}
-# Hint: ${levelData.hint}
+    const [code, setCode] = useState('')
+    const [cleanedData, setCleanedData] = useState("")
+    const [answer, setAnswer] = useState("")
+    const [submitFeedback, setSubmitFeedback] = useState(null)
+
+    const workerRef = useRef(null)
+
+    // Reset editor boilerplate when level changes
+    const buildStarterCode = (meta) => `# Write your Python script here to parse the corrupted log
+# Difficulty: ${meta.label}
+# Hint: ${meta.hint}
 
 # The variable 'raw_log_data' contains the input string.
 # Print your process to stdout.
@@ -30,15 +40,37 @@ def clean_data():
     # Example: return the first line
     return lines[0]
 
-clean_data()`)
-    const [cleanedData, setCleanedData] = useState("")
-    const [answer, setAnswer] = useState("")
-    const [submitFeedback, setSubmitFeedback] = useState(null) // { type: 'success'|'error', msg: '' }
+clean_data()`
 
-    const workerRef = useRef(null)
-
+    // Load the level's .txt file
     useEffect(() => {
-        // Initialize the worker
+        let cancelled = false
+        setLoadingLog(true)
+        loadLevelLog(currentLevel)
+            .then(text => {
+                if (!cancelled) {
+                    setCorruptedLog(text)
+                    setLoadingLog(false)
+                    addLog(`> SYSTEM: Level ${currentLevel} data stream loaded. Difficulty: ${levelMeta.label}`)
+                }
+            })
+            .catch(err => {
+                if (!cancelled) {
+                    setCorruptedLog('[ERROR] Failed to load log data.')
+                    setLoadingLog(false)
+                    addLog(`> ERROR: ${err.message}`)
+                }
+            })
+        return () => { cancelled = true }
+    }, [currentLevel])
+
+    // Set starter code on mount / level change
+    useEffect(() => {
+        setCode(buildStarterCode(levelMeta))
+    }, [currentLevel])
+
+    // Pyodide worker
+    useEffect(() => {
         workerRef.current = new Worker(new URL('../pyodide-worker.js', import.meta.url));
 
         workerRef.current.onmessage = (event) => {
@@ -95,21 +127,47 @@ clean_data()`)
         }
     }, [executing, code, corruptedLog])
 
+    const advanceLevel = () => {
+        const nextLevel = currentLevel + 1
+        if (nextLevel > TOTAL_LEVELS) {
+            addLog('> ★ ALL LEVELS COMPLETED! YOU HAVE MASTERED THE BLACK BOX.')
+            setSubmitFeedback({ type: 'success', msg: 'ALL LEVELS COMPLETED! CONGRATULATIONS, OPERATOR.' })
+            return
+        }
+
+        // Reset state for next level
+        setCurrentLevel(nextLevel)
+        setShowCleaned(false)
+        setCanToggleCleaned(false)
+        setCleanedData('')
+        setAnswer('')
+        setSubmitFeedback(null)
+        setLogs([MOCK_TERMINAL_WELCOME])
+
+        // Persist new level
+        const saved = localStorage.getItem('blackbox_user')
+        if (saved) {
+            const userData = JSON.parse(saved)
+            userData.level = nextLevel
+            localStorage.setItem('blackbox_user', JSON.stringify(userData))
+        }
+    }
+
     const handleSubmit = () => {
         if (!answer.trim()) {
             setSubmitFeedback({ type: 'error', msg: 'ENTER YOUR ANSWER FIRST' })
             return
         }
 
-        const userAnswer = answer.trim().toUpperCase()
-        const correctAnswer = levelData.answer.trim().toUpperCase()
+        if (checkAnswer(answer, currentLevel)) {
+            setSubmitFeedback({ type: 'success', msg: `CORRECT! ANOMALY IDENTIFIED.` })
+            addLog(`> ✓ SUBMISSION ACCEPTED`)
 
-        if (userAnswer === correctAnswer) {
-            setSubmitFeedback({ type: 'success', msg: `CORRECT! ANOMALY IDENTIFIED: ${correctAnswer}` })
-            addLog(`> ✓ SUBMISSION ACCEPTED: ${correctAnswer}`)
+            // Advance after a short delay
+            setTimeout(() => advanceLevel(), 2000)
         } else {
-            setSubmitFeedback({ type: 'error', msg: `INCORRECT. "${userAnswer}" IS NOT THE ANOMALY. TRY AGAIN.` })
-            addLog(`> ✗ SUBMISSION REJECTED: "${userAnswer}" does not match.`)
+            setSubmitFeedback({ type: 'error', msg: `INCORRECT. TRY AGAIN.` })
+            addLog(`> ✗ SUBMISSION REJECTED: "${answer}" does not match.`)
         }
     }
 
@@ -125,17 +183,22 @@ clean_data()`)
                         OPERATOR: {user.rollNo}
                     </span>
                     <span className="text-green-800">│</span>
-                    <span className="text-green-700 tracking-wider">LEVEL: {level}</span>
+                    <span className="text-green-700 tracking-wider">LEVEL: {currentLevel} / {TOTAL_LEVELS}</span>
                     <span className="text-green-800">│</span>
-                    <span className={`tracking-wider ${level === 1 ? 'text-green-500' : level === 2 ? 'text-yellow-500' : 'text-red-500'
+                    <span className={`tracking-wider ${currentLevel === 1 ? 'text-green-500' : currentLevel === 2 ? 'text-yellow-500' : 'text-red-500'
                         }`}>
-                        DIFFICULTY: {levelData.label}
+                        DIFFICULTY: {levelMeta.label}
                     </span>
                 </div>
                 <div className="flex items-center space-x-3">
                     {!pyodideReady && (
                         <span className="text-yellow-600 text-[10px] tracking-wider animate-pulse">
                             ⟳ LOADING PYTHON RUNTIME...
+                        </span>
+                    )}
+                    {loadingLog && (
+                        <span className="text-yellow-600 text-[10px] tracking-wider animate-pulse">
+                            ⟳ LOADING LOG DATA...
                         </span>
                     )}
                     {onToggleAdmin && (
@@ -166,8 +229,8 @@ clean_data()`)
             {/* Submit Feedback Banner */}
             {submitFeedback && (
                 <div className={`px-4 py-2.5 text-sm font-bold tracking-wider flex items-center justify-between relative z-10 ${submitFeedback.type === 'success'
-                        ? 'bg-green-950/50 border-b border-green-700/40 text-green-400'
-                        : 'bg-red-950/50 border-b border-red-700/40 text-red-400'
+                    ? 'bg-green-950/50 border-b border-green-700/40 text-green-400'
+                    : 'bg-red-950/50 border-b border-red-700/40 text-red-400'
                     }`}>
                     <span>
                         <span className={submitFeedback.type === 'success' ? 'text-green-600' : 'text-red-600'}>
@@ -218,7 +281,7 @@ clean_data()`)
                 isExecutionFinished={canToggleCleaned}
                 answer={answer}
                 onAnswerChange={setAnswer}
-                hint={levelData.hint}
+                hint={levelMeta.hint}
             />
         </div>
     )

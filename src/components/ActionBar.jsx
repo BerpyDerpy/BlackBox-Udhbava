@@ -36,7 +36,7 @@ export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinishe
                     <input
                         type="text"
                         value={answer}
-                        onChange={(e) => onAnswerChange(e.target.value.toUpperCase())}
+                        onChange={(e) => onAnswerChange(e.target.value)}
                         placeholder="IDENTIFY ANOMALY >"
                         className="w-full bg-black/70 border border-green-900/30 rounded-sm py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-green-500/60 focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] text-green-300 placeholder-green-900/40 transition-all duration-300"
                     />
