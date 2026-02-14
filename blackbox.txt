@@ -1,3 +1,0 @@
-This is a sample BlackBox file.
-Decrypt this message to proceed to the next level.
-Hint: Look for patterns in the text.

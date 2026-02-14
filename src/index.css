@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --terminal-green: #00ff41;
+  --terminal-bg: #0d0d0d;
+}
+
+body {
+  background-color: var(--terminal-bg);
+  color: var(--terminal-green);
+  font-family: 'Courier New', Courier, monospace;
+  /* Fallback for now */
+  overflow: hidden;
+  /* App-like feel */
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Selection Color */
+::selection {
+  background: var(--terminal-green);
+  color: var(--terminal-bg);
+}
+
+/* Glitch Effect Utility Class (Optional Placeholder) */
+.glitch {
+  position: relative;
+}

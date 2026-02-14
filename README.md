@@ -1,26 +1,16 @@
-# BlackBox Udhbava
+# React + Vite
 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-This repository houses the frontend interface for our coding event, where contestants put their logical thinking and scripting skills to the test. It's a sleek, dark-themed web environment designed to let participants focus on one thing: cracking the code.
+Currently, two official plugins are available:
 
-## What is this?
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-Think of this as the cockpit for the event. Participants log in with their roll numbers and are immediately thrust into the challenge. They are presented with BlackBox text files: mysterious encoded data that needs deciphering. To help them, we've integrated a full-featured code editor right in the browser.
+## React Compiler
 
-## Key Features
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- **Instant Access**: Simple login via Supabase ensures legitimate participants can jump straight in.
-- **he BlackBox**: Direct visualization of the puzzle files they need to decode.
-- **Integrated IDE**: We've baked in the **Monaco Editor** (the same engine that powers VS Code). It supports syntax highlighting for **JavaScript, Python, Java, and C++**, so participants can work in their language of choice.
-- **Live Execution**: Contestants can run their scripts on the fly to test logic against the blackbox data.
-- **Auto-Save & History**: A basic undo history keeps their code safe from accidental deletions.
+## Expanding the ESLint configuration
 
-## Under the Hood
-
-- **Frontend**: Plain HTML5, CSS3, and Vanilla JavaScript. Fast, lightweight, and no build steps required.
-- **Styling**: Custom CSS with a modern "Glassmorphism" aesthetic—dark modes, blurs, and neon accents.
-- **Database**: **Supabase** handles user authentication and score tracking.
-- **Backend Communication**: The app talks to a separate backend service (running locally or deployed elsewhere) to execute code safely and validate submissions.
-
-
----
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
