@@ -4,81 +4,191 @@
   --color-gray-950: #0a0a0a;
 }
 
-@layer utilities {
-  .text-glow {
-    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-
-  @keyframes pulse-glow {
-
-    0%,
-    100% {
-      opacity: 1;
-      box-shadow: 0 0 0 rgba(74, 222, 128, 0);
-    }
-
-    50% {
-      opacity: .8;
-      box-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
-    }
-  }
-
-  .animate-progress-shrink {
-    animation: progress-shrink linear forwards;
-  }
-
-  @keyframes progress-shrink {
-    from {
-      transform: scaleX(1);
-    }
-
-    to {
-      transform: scaleX(0);
-    }
-  }
+:root {
+  --terminal-green: #00ff41;
+  --terminal-green-dim: #003b00;
+  --terminal-bg: #0a0a0a;
+  --glow-green: 0 0 7px rgba(0, 255, 65, 0.4), 0 0 15px rgba(0, 255, 65, 0.15);
+  --glow-green-strong: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 30px rgba(0, 255, 65, 0.3), 0 0 60px rgba(0, 255, 65, 0.1);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+* {
+  box-sizing: border-box;
 }
 
-::-webkit-scrollbar-track {
-  background: #000;
+body {
+  background-color: var(--terminal-bg);
+  color: var(--terminal-green);
+  font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #111;
-  border: 1px solid #333;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #222;
-}
-
-/* CRT Overlay Effect */
+/* ═══════════ CRT Scanline Overlay ═══════════ */
 .crt-overlay {
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg,
-      rgba(255, 0, 0, 0.06),
-      rgba(0, 255, 0, 0.02),
-      rgba(0, 0, 255, 0.06));
-  background-size: 100% 2px, 3px 100%;
   pointer-events: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px);
+  mix-blend-mode: multiply;
 }
 
-/* Noise Overlay */
+/* Subtle screen flicker */
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 255, 65, 0.01);
+  animation: crt-flicker 0.15s infinite;
+  opacity: 0;
+}
+
+@keyframes crt-flicker {
+  0% {
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 0.02;
+  }
+
+  10% {
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.015;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ═══════════ Glow Utilities ═══════════ */
+.text-glow {
+  text-shadow: var(--glow-green);
+}
+
+.text-glow-strong {
+  text-shadow: var(--glow-green-strong);
+}
+
+.border-glow {
+  box-shadow: var(--glow-green);
+}
+
+.border-glow-strong {
+  box-shadow: var(--glow-green-strong);
+}
+
+/* ═══════════ Typing Cursor Blink ═══════════ */
+@keyframes blink-cursor {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink-cursor 1s step-end infinite;
+}
+
+/* ═══════════ Pulse Glow ═══════════ */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.5), 0 0 30px rgba(0, 255, 65, 0.2);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ═══════════ Boot-up Fade In ═══════════ */
+@keyframes fade-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-boot {
+  animation: fade-slide-up 0.6s ease-out forwards;
+}
+
+.animate-boot-delay-1 {
+  animation-delay: 0.1s;
+  opacity: 0;
+}
+
+.animate-boot-delay-2 {
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+.animate-boot-delay-3 {
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+
+.animate-boot-delay-4 {
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+/* ═══════════ Progress Shrink (feedback overlay) ═══════════ */
+@keyframes progress-shrink {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.animate-progress-shrink {
+  animation: progress-shrink linear forwards;
+}
+
+/* ═══════════ Noise / Static Overlay ═══════════ */
+@keyframes static-noise {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
 .noise-overlay {
   position: absolute;
   top: 0;
@@ -89,9 +199,24 @@
   pointer-events: none;
   z-index: 0;
   opacity: 0.4;
+  animation: static-noise 8s linear infinite;
 }
 
-body {
-  background-color: #000;
-  color: #4ade80;
+/* ═══════════ Custom Scrollbar ═══════════ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border: 1px solid #333;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a2a;
 }

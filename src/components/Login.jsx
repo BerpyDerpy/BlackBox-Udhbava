@@ -71,10 +71,13 @@ export default function Login({ onLogin }) {
                         BLACK BOX
                     </h1>
                     <h2 className="text-lg tracking-[0.3em] text-green-600 mt-1">SYSTEM</h2>
+                    <div className="mt-2 inline-block px-3 py-0.5 border border-green-900/40 bg-green-950/30 rounded-sm">
+                        <span className="text-[10px] text-green-500 tracking-widest font-bold">UDHBAVA 3.0</span>
+                    </div>
                     <div className="flex items-center justify-center gap-2 mt-3">
                         <Shield className="w-3 h-3 text-green-800" />
                         <p className="text-[10px] text-green-800 tracking-widest">
-                            SECURE_CHANNEL::V1.0.4
+                            SECURE_CHANNEL::UDHBAVA_3.0
                         </p>
                         <Shield className="w-3 h-3 text-green-800" />
                     </div>
