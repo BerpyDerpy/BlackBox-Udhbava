@@ -10,7 +10,7 @@ export const LEVEL_META = {
         keywords: ['1404', '1405', 'temp', 'temperature', 'motor'],
     },
     2: {
-        file: '/levels/level_2_medium.txt',
+        file: '/levels/level_2_medium_v2.txt',
         label: 'MEDIUM',
         hint: 'Decode the hexadecimal payloads and graph or calculate the delta between the two values to find the physical anomaly.',
         keywords: ['oscillation', 'resonance', 'instability', 'pogo', '1.500', '1.5'],

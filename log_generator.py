@@ -26,31 +26,35 @@ def generate_easy_log():
         f.write("[NOISE]..CONNECTION LOST..[END]\n")
 
 def generate_medium_log():
-    print("Generating Level 2: Medium...")
-    with open("level_2_medium.txt", "w") as f:
-        f.write("[T+0.000] PROPULSION SYSTEM TEST - MAIN ENGINE START\n")
-        # Base stable pressure and flow
-        base_pressure = 500
-        base_flow = 160
+    print("Generating Level 2: Medium (Signal vs Noise)...")
+    with open("level_2_medium_v2.txt", "w") as f:
+        f.write("[TEST START] TURBOPUMP INLET TELEMETRY\n")
+        f.write("[WARN] SENSOR S1 (INLET_P) EXPERIENCING HIGH FREQUENCY INTERFERENCE\n")
         
-        for i in range(1, 151):
+        true_pressure = 600.0
+        
+        for i in range(1, 1501):
             t = i * 0.010
-            # Introduce an escalating sinusoidal oscillation (Combustion Instability)
-            instability_factor = (i / 150.0) ** 3 # Starts low, grows exponentially
-            pressure = int(base_pressure + (math.sin(i * 0.5) * 200 * instability_factor))
-            flow = int(base_flow + (math.cos(i * 0.5) * 80 * instability_factor))
             
-            # Convert to hex, pad to 4 chars
-            hex_p = f"0x{pressure:04X}"
-            hex_f = f"0x{flow:04X}"
-            
-            if i == 150:
-                f.write(f"[T+{t:.3f}] VALVES:OPEN | IGN:ON | SYS: STRUCTURAL_FAILURE_DETECTED\n")
+            # The true pressure slowly drops. 
+            # Drops slowly at first, then accelerates after T+10.000
+            if i <= 1000:
+                true_pressure -= 0.10  # Drops from 600 to 500
             else:
-                f.write(f"[T+{t:.3f}] VALVES:OPEN | IGN:ON | PYLD: {hex_p} {hex_f}\n")
-
-import math
-import json
+                true_pressure -= 1.00  # Drops from 500 to 0
+                
+            # Add massive noise (±350) to completely blind LLM text analysis
+            noise = random.uniform(-350, 350)
+            measured_p = true_pressure + noise
+            
+            # Keep RPM and Temp stable to avoid giving LLMs an easy secondary clue
+            rpm = 95000 + random.randint(-50, 50)
+            temp = 120.0 + random.uniform(-1, 1)
+            
+            f.write(f"[T+{t:.3f}] INLET_P: {measured_p:.2f} | PUMP_RPM: {rpm} | BRG_TEMP: {temp:.1f}\n")
+            
+        f.write(f"[T+{15.010:.3f}] SYS_ERR: CAVITATION_DETECTED\n")
+        f.write(f"[T+{15.020:.3f}] SYS_ERR: PUMP_OVERSPEED_DESTRUCTION\n")
 
 def generate_hard_log():
     print("Generating Level 3: Hard (Packet Dump)...")
@@ -107,7 +111,7 @@ def generate_hard_log():
         f.write("=== FATAL KINETIC IMPACT: CONNECTION SEVERED ===\n")
 
 if __name__ == "__main__":
-    generate_easy_log()
+    #generate_easy_log()
     generate_medium_log()
-    generate_hard_log()
+    #generate_hard_log()
     print("Done! Files generated.")
