@@ -31,8 +31,63 @@ export default function Dashboard({ user, onToggleAdmin, onLogout }) {
     const [totalScore, setTotalScore] = useState(user.score || 0)
     const [gameCompleted, setGameCompleted] = useState(false)
     const [totalElapsed, setTotalElapsed] = useState(0)
+    const [stateLoaded, setStateLoaded] = useState(false)
 
     const workerRef = useRef(null)
+
+    // ─── Load persistent state from Supabase on mount ───
+    useEffect(() => {
+        const loadPersistedState = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('score, current_level, level_start_time')
+                    .eq('roll_no', user.rollNo)
+                    .single()
+
+                if (error) throw error
+
+                if (data) {
+                    if (data.score != null) setTotalScore(data.score)
+                    if (data.current_level != null) {
+                        setCurrentLevel(data.current_level)
+                        if (data.current_level > TOTAL_LEVELS) {
+                            setGameCompleted(true)
+                        }
+                    }
+                    if (data.level_start_time) {
+                        const startMs = new Date(data.level_start_time).getTime()
+                        setLevelStartTime(startMs)
+                        const elapsed = Math.floor((Date.now() - startMs) / 1000)
+                        setElapsedSeconds(Math.max(0, elapsed))
+                    } else {
+                        // First login — set level_start_time in Supabase
+                        const now = new Date().toISOString()
+                        setLevelStartTime(Date.now())
+                        await supabase
+                            .from('users')
+                            .update({ level_start_time: now })
+                            .eq('roll_no', user.rollNo)
+                    }
+
+                    // Also update localStorage for consistency
+                    const saved = localStorage.getItem('blackbox_user')
+                    if (saved) {
+                        const userData = JSON.parse(saved)
+                        userData.level = data.current_level
+                        userData.score = data.score
+                        localStorage.setItem('blackbox_user', JSON.stringify(userData))
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to load persisted state:', err)
+            } finally {
+                setStateLoaded(true)
+            }
+        }
+
+        loadPersistedState()
+    }, [])
 
     // Reset editor boilerplate when level changes
     const buildStarterCode = (meta) => `# Write your Python script here to parse the corrupted log
@@ -73,16 +128,16 @@ clean_data()`
         return () => { cancelled = true }
     }, [currentLevel])
 
-    // Timer — ticks every second
+    // Timer — ticks every second, resumes from persisted levelStartTime
     useEffect(() => {
         if (gameCompleted) return
-        setLevelStartTime(Date.now())
-        setElapsedSeconds(0)
+        if (!stateLoaded) return  // wait for Supabase state before starting timer
+
         const interval = setInterval(() => {
-            setElapsedSeconds(prev => prev + 1)
+            setElapsedSeconds(Math.floor((Date.now() - levelStartTime) / 1000))
         }, 1000)
         return () => clearInterval(interval)
-    }, [currentLevel, gameCompleted])
+    }, [levelStartTime, gameCompleted, stateLoaded])
 
     // Set starter code on mount / level change
     useEffect(() => {
@@ -154,9 +209,14 @@ clean_data()`
 
     const persistScore = async (newScore, nextLevel) => {
         try {
+            const now = new Date().toISOString()
             await supabase
                 .from('users')
-                .update({ score: newScore, current_level: nextLevel })
+                .update({
+                    score: newScore,
+                    current_level: nextLevel,
+                    level_start_time: now,
+                })
                 .eq('roll_no', user.rollNo)
         } catch (err) {
             console.error('Failed to persist score:', err)
@@ -174,6 +234,11 @@ clean_data()`
             return
         }
 
+        // Set new timer start for next level
+        const newStartTime = Date.now()
+        setLevelStartTime(newStartTime)
+        setElapsedSeconds(0)
+
         // Reset state for next level
         setCurrentLevel(nextLevel)
         setShowCleaned(false)
@@ -183,7 +248,7 @@ clean_data()`
         setSubmitFeedback(null)
         setLogs([MOCK_TERMINAL_WELCOME])
 
-        // Persist new level
+        // Persist new level to localStorage
         const saved = localStorage.getItem('blackbox_user')
         if (saved) {
             const userData = JSON.parse(saved)

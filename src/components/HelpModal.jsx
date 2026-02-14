@@ -69,12 +69,12 @@ export default function HelpModal({ onClose }) {
                     >
                         <div className="space-y-2">
                             {[
-                                ['01', 'READ the corrupted log data in the left panel'],
+                                ['01', 'READ the corrupted log data in the left panel — it tells a story with data embedded in it'],
                                 ['02', 'WRITE a Python script in the editor (right panel) to parse and clean the data'],
-                                ['03', 'CLICK "RUN SCRIPT" — your code runs in-browser via Pyodide'],
-                                ['04', 'ANALYZE the terminal output and cleaned data'],
-                                ['05', 'TYPE your answer in the submission box (e.g. the anomalous reading, timestamp, or sensor name)'],
-                                ['06', 'CLICK "SUBMIT" — if correct, you advance to the next level'],
+                                ['03', 'CLICK "RUN SCRIPT" — your code runs in-browser'],
+                                ['04', 'ANALYZE the terminal output to find the anomaly'],
+                                ['05', 'TYPE your answer as a sentence explaining WHAT went wrong and WHEN/WHY it happened'],
+                                ['06', 'CLICK "SUBMIT" — the button only activates after you run a script'],
                             ].map(([num, text]) => (
                                 <div key={num} className="flex items-start gap-3">
                                     <span className="text-green-700 text-xs font-bold shrink-0 w-6 text-right">[{num}]</span>
@@ -86,68 +86,76 @@ export default function HelpModal({ onClose }) {
                             TIP: The variable <code className="text-green-400 bg-black/50 px-1">raw_log_data</code> is
                             pre-loaded with the log contents. Just use it directly in your script.
                         </div>
+                        <div className="mt-2 p-2 border border-yellow-900/30 bg-yellow-950/10 text-xs text-yellow-600 tracking-wider">
+                            ⚠ IMPORTANT: The SUBMIT button is <span className="text-yellow-400 font-bold">disabled</span> until
+                            you run your script at least once. Run your code first, then submit your answer.
+                        </div>
                     </Section>
 
-                    {/* ═══ Section 3: Example ═══ */}
+                    {/* ═══ Section 3: How to Answer ═══ */}
                     <Section
                         icon={<Code2 className="w-4 h-4" />}
-                        title="EXAMPLE :: LEVEL 1"
+                        title="HOW TO ANSWER"
                         delay="3"
                     >
+                        <div className="p-3 border border-green-900/40 bg-green-950/20 mb-4">
+                            <p className="text-green-400 text-sm font-bold tracking-wider mb-2">YOUR ANSWER SHOULD BE A SENTENCE, NOT JUST A NUMBER.</p>
+                            <p className="text-green-500/80 text-sm leading-relaxed">
+                                Describe <span className="text-green-300 font-bold">what went wrong</span> and{' '}
+                                <span className="text-green-300 font-bold">when/where it happened</span>. The system checks
+                                that your answer covers at least <span className="text-green-300 font-bold">two different aspects</span>{' '}
+                                of the anomaly (ex: the component AND the timestamp, or the failure type AND the cause).
+                            </p>
+                        </div>
+
                         <p className="text-green-600 text-xs tracking-wider mb-3">
-                            ▸ SAMPLE LOG DATA (EXCERPT):
+                            ▸ EXAMPLE SCENARIO: A motor overheated at timestamp 1005.
                         </p>
-                        <pre className="bg-black/80 border border-green-900/30 p-3 text-xs text-green-600 overflow-x-auto leading-relaxed">
-                            {`T:1004|SENSOR:TEMP|ZONE:HYDRAULIC|VAL:45.0|STATUS:OK
-$$FRAG$$ ..data_recovery..0x00FF..$$
-T:1005|SENSOR:TEMP|ZONE:HYDRAULIC|VAL:187.4|STATUS:CRITICAL
-@@WARN@@ THRESHOLD_EXCEEDED::ZONE_HYDRAULIC`}</pre>
 
-                        <p className="text-green-600 text-xs tracking-wider mt-4 mb-3">
-                            ▸ SAMPLE PYTHON SCRIPT:
-                        </p>
-                        <pre className="bg-black/80 border border-green-900/30 p-3 text-xs text-green-600 overflow-x-auto leading-relaxed">
-                            {`lines = raw_log_data.split('\\n')
-for line in lines:
-    if 'CRITICAL' in line:
-        print(f"ANOMALY FOUND: {line}")
-        # Extract the timestamp
-        parts = line.split('|')
-        timestamp = parts[0]  # "T:1005"
-        print(f"Timestamp: {timestamp}")`}</pre>
-
-                        <div className="mt-4 space-y-2">
+                        <div className="space-y-3">
                             <div className="flex items-center gap-2">
                                 <span className="text-green-400 text-sm">✓</span>
-                                <span className="text-green-400 text-sm font-bold">CORRECT ANSWERS:</span>
+                                <span className="text-green-400 text-sm font-bold">GOOD ANSWERS (accepted):</span>
                             </div>
-                            <div className="pl-6 space-y-1 text-sm">
-                                <p className="text-green-500/80">
-                                    <code className="bg-black/50 px-1 text-green-300">"t:1005"</code>,{' '}
-                                    <code className="bg-black/50 px-1 text-green-300">"1005"</code>,{' '}
-                                    <code className="bg-black/50 px-1 text-green-300">"hydraulic"</code>,{' '}
-                                    or <code className="bg-black/50 px-1 text-green-300">"The hydraulic sensor spiked at T:1005"</code>
-                                </p>
+                            <div className="pl-6 space-y-2 text-sm">
+                                <div>
+                                    <code className="bg-black/50 px-1 text-green-300">"The motor temperature spiked at T:1005"</code>
+                                    <span className="text-green-700 text-xs ml-2">— covers WHAT + WHEN</span>
+                                </div>
+                                <div>
+                                    <code className="bg-black/50 px-1 text-green-300">"Thermal anomaly in the motor caused a shutdown"</code>
+                                    <span className="text-green-700 text-xs ml-2">— covers WHAT + WHERE</span>
+                                </div>
+                                <div>
+                                    <code className="bg-black/50 px-1 text-green-300">"Motor overheated at 1005, voltage dropped to zero"</code>
+                                    <span className="text-green-700 text-xs ml-2">— covers WHERE + WHEN + HOW</span>
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-2 mt-3">
                                 <span className="text-red-400 text-sm">✗</span>
-                                <span className="text-red-400 text-sm font-bold">WRONG ANSWERS:</span>
+                                <span className="text-red-400 text-sm font-bold">BAD ANSWERS (rejected):</span>
                             </div>
-                            <div className="pl-6 space-y-1 text-sm">
-                                <p className="text-red-400/70">
-                                    <code className="bg-black/50 px-1">"temperature spike"</code>,{' '}
-                                    <code className="bg-black/50 px-1">"engine"</code>,{' '}
-                                    <code className="bg-black/50 px-1">"anomaly detected"</code>
-                                </p>
+                            <div className="pl-6 space-y-2 text-sm">
+                                <div>
+                                    <code className="bg-black/50 px-1 text-red-400/70">"1005"</code>
+                                    <span className="text-red-700 text-xs ml-2">— too short, only covers WHEN</span>
+                                </div>
+                                <div>
+                                    <code className="bg-black/50 px-1 text-red-400/70">"something went wrong"</code>
+                                    <span className="text-red-700 text-xs ml-2">— too vague, doesn't mention specifics</span>
+                                </div>
+                                <div>
+                                    <code className="bg-black/50 px-1 text-red-400/70">"motor"</code>
+                                    <span className="text-red-700 text-xs ml-2">— too short, only covers WHERE</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 p-2 border border-yellow-900/30 bg-yellow-950/10 text-xs text-yellow-600 tracking-wider">
-                            ⚠ KEYWORD MATCHING: Your answer must contain at least one of the level's
-                            keywords. It's case-insensitive and can be part of a longer sentence.
-                            Each level has specific keywords — think about <span className="text-yellow-400">timestamps</span>,{' '}
-                            <span className="text-yellow-400">sensor names</span>, or <span className="text-yellow-400">zone identifiers</span>.
+                        <div className="mt-4 p-2 border border-cyan-900/30 bg-cyan-950/10 text-xs text-cyan-600 tracking-wider">
+                            💡 THINK OF IT THIS WAY: If a friend asked you "What happened?", give
+                            them enough detail that they'd understand. Mention the <span className="text-cyan-400">component</span>,
+                            the <span className="text-cyan-400">timestamp</span>, or the <span className="text-cyan-400">type of failure</span> — at least two of these.
                         </div>
                     </Section>
 

@@ -1,6 +1,19 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║  NEXUS DEFENSE SYSTEMS — SWARM OPERATIONS CENTER                     ║
+║  OPERATION: OVERWATCH | FLIGHT: ALPHA + BRAVO (2-SHIP FORMATION)     ║
+║  OPERATOR: SGT. JAMES KOWALSKI                                       ║
+║  STATUS: ■■ KINETIC IMPACT — INVESTIGATION REQUIRED ■■               ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+[PRE-FLIGHT BRIEFING — SGT. KOWALSKI]
+Standard two-ship patrol. ALPHA runs a figure-8 survey pattern while
+BRAVO holds a loiter overhead as relay. Both drones report telemetry
+to this console every 100ms.
+
 === SWARM NETWORK INTERFACE START ===
 LISTENING ON UDP PORT 14550...
-[SYS] CLOCK SYNC ESTABLISHED. TOLERANCE: 5.0s
+[SYS] CLOCK SYNC PROTOCOL: ACTIVE | TOLERANCE: 5.0s | MODE: REJECT_STALE
+
 [SEQ:00001] RECV | SYS_TS:50000.100 | CHK:0x15 | PLD:{"uav": "ALPHA", "t_local": 50000.099, "pos": [30.01, 10.05, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 24.0}
 [SEQ:00002] RECV | SYS_TS:50000.200 | CHK:0x16 | PLD:{"uav": "ALPHA", "t_local": 50000.198, "pos": [30.02, 10.1, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 24.0}
 [SEQ:00003] RECV | SYS_TS:50000.300 | CHK:0x17 | PLD:{"uav": "ALPHA", "t_local": 50000.297, "pos": [30.03, 10.15, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 24.0}
@@ -599,6 +612,9 @@ LISTENING ON UDP PORT 14550...
 [SEQ:00497] RECV | SYS_TS:50049.700 | CHK:0x38 | PLD:{"uav": "ALPHA", "t_local": 50049.203, "pos": [34.97, 9.72, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.5}
 [SEQ:00498] RECV | SYS_TS:50049.800 | CHK:0x39 | PLD:{"uav": "ALPHA", "t_local": 50049.302, "pos": [34.98, 9.77, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.5}
 [SEQ:00499] RECV | SYS_TS:50049.900 | CHK:0x3A | PLD:{"uav": "ALPHA", "t_local": 50049.401, "pos": [34.99, 9.82, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.5}
+
+[KOWALSKI — T+50s]: Both ships nominal. Routine.
+
 [SEQ:00500] RECV | SYS_TS:50050.000 | CHK:0x3B | PLD:{"uav": "ALPHA", "t_local": 50049.5, "pos": [35.0, 9.87, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.5}
 [SEQ:00500_B] RECV | SYS_TS:50050.000 | CHK:0x45 | PLD:{"uav": "BRAVO", "t_local": 50050.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:00501] RECV | SYS_TS:50050.100 | CHK:0x3D | PLD:{"uav": "ALPHA", "t_local": 50049.599, "pos": [35.01, 9.92, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.5}
@@ -1199,6 +1215,9 @@ LISTENING ON UDP PORT 14550...
 [SEQ:00997] RECV | SYS_TS:50099.700 | CHK:0x60 | PLD:{"uav": "ALPHA", "t_local": 50098.703, "pos": [39.97, 9.6, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.0}
 [SEQ:00998] RECV | SYS_TS:50099.800 | CHK:0x61 | PLD:{"uav": "ALPHA", "t_local": 50098.802, "pos": [39.98, 9.64, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.0}
 [SEQ:00999] RECV | SYS_TS:50099.900 | CHK:0x62 | PLD:{"uav": "ALPHA", "t_local": 50098.901, "pos": [39.99, 9.69, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.0}
+
+[KOWALSKI — T+100s]: Hundred seconds in. Nothing unusual.
+
 [SEQ:01000] RECV | SYS_TS:50100.000 | CHK:0x63 | PLD:{"uav": "ALPHA", "t_local": 50099.0, "pos": [40.0, 9.74, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.0}
 [SEQ:01000_B] RECV | SYS_TS:50100.000 | CHK:0x6D | PLD:{"uav": "BRAVO", "t_local": 50100.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:01001] RECV | SYS_TS:50100.100 | CHK:0x65 | PLD:{"uav": "ALPHA", "t_local": 50099.099, "pos": [40.01, 9.79, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 23.0}
@@ -2399,6 +2418,9 @@ LISTENING ON UDP PORT 14550...
 [SEQ:01997] RECV | SYS_TS:50199.700 | CHK:0xB0 | PLD:{"uav": "ALPHA", "t_local": 50197.703, "pos": [49.97, 9.37, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 22.0}
 [SEQ:01998] RECV | SYS_TS:50199.800 | CHK:0xB1 | PLD:{"uav": "ALPHA", "t_local": 50197.802, "pos": [49.98, 9.41, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 22.0}
 [SEQ:01999] RECV | SYS_TS:50199.900 | CHK:0xB2 | PLD:{"uav": "ALPHA", "t_local": 50197.901, "pos": [49.99, 9.45, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 22.0}
+
+[KOWALSKI — T+200s]: Still nominal. BRAVO holding position.
+
 [SEQ:02000] RECV | SYS_TS:50200.000 | CHK:0xB3 | PLD:{"uav": "ALPHA", "t_local": 50198.0, "pos": [50.0, 9.49, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 22.0}
 [SEQ:02000_B] RECV | SYS_TS:50200.000 | CHK:0xBD | PLD:{"uav": "BRAVO", "t_local": 50200.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:02001] RECV | SYS_TS:50200.100 | CHK:0xB5 | PLD:{"uav": "ALPHA", "t_local": 50198.099, "pos": [50.01, 9.54, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 22.0}
@@ -3599,6 +3621,10 @@ LISTENING ON UDP PORT 14550...
 [SEQ:02997] RECV | SYS_TS:50299.700 | CHK:0x01 | PLD:{"uav": "ALPHA", "t_local": 50296.703, "pos": [59.97, 9.19, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 21.0}
 [SEQ:02998] RECV | SYS_TS:50299.800 | CHK:0x02 | PLD:{"uav": "ALPHA", "t_local": 50296.802, "pos": [59.98, 9.22, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 21.0}
 [SEQ:02999] RECV | SYS_TS:50299.900 | CHK:0x03 | PLD:{"uav": "ALPHA", "t_local": 50296.901, "pos": [59.99, 9.25, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 21.0}
+
+[KOWALSKI — T+300s]: Three hundred seconds. Something feels off
+about ALPHA's data but I can't put my finger on it.
+
 [SEQ:03000] RECV | SYS_TS:50300.000 | CHK:0x04 | PLD:{"uav": "ALPHA", "t_local": 50297.0, "pos": [60.0, 9.29, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 21.0}
 [SEQ:03000_B] RECV | SYS_TS:50300.000 | CHK:0x0E | PLD:{"uav": "BRAVO", "t_local": 50300.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:03001] RECV | SYS_TS:50300.100 | CHK:0x06 | PLD:{"uav": "ALPHA", "t_local": 50297.099, "pos": [60.01, 9.32, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 21.0}
@@ -4799,6 +4825,11 @@ LISTENING ON UDP PORT 14550...
 [SEQ:03997] RECV | SYS_TS:50399.700 | CHK:0x51 | PLD:{"uav": "ALPHA", "t_local": 50395.703, "pos": [69.97, 9.06, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 20.0}
 [SEQ:03998] RECV | SYS_TS:50399.800 | CHK:0x52 | PLD:{"uav": "ALPHA", "t_local": 50395.802, "pos": [69.98, 9.08, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 20.0}
 [SEQ:03999] RECV | SYS_TS:50399.900 | CHK:0x53 | PLD:{"uav": "ALPHA", "t_local": 50395.901, "pos": [69.99, 9.1, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 20.0}
+
+[KOWALSKI — T+400s]: I keep staring at these packets.
+Something is wrong but the numbers all look valid.
+Maybe I'm imagining it.
+
 [SEQ:04000] RECV | SYS_TS:50400.000 | CHK:0x54 | PLD:{"uav": "ALPHA", "t_local": 50396.0, "pos": [70.0, 9.13, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 20.0}
 [SEQ:04000_B] RECV | SYS_TS:50400.000 | CHK:0x5E | PLD:{"uav": "BRAVO", "t_local": 50400.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:04001] RECV | SYS_TS:50400.100 | CHK:0x56 | PLD:{"uav": "ALPHA", "t_local": 50396.099, "pos": [70.01, 9.15, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 20.0}
@@ -5399,6 +5430,11 @@ LISTENING ON UDP PORT 14550...
 [SEQ:04497] RECV | SYS_TS:50449.700 | CHK:0x79 | PLD:{"uav": "ALPHA", "t_local": 50445.203, "pos": [74.97, 9.03, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.5}
 [SEQ:04498] RECV | SYS_TS:50449.800 | CHK:0x7A | PLD:{"uav": "ALPHA", "t_local": 50445.302, "pos": [74.98, 9.04, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.5}
 [SEQ:04499] RECV | SYS_TS:50449.900 | CHK:0x7B | PLD:{"uav": "ALPHA", "t_local": 50445.401, "pos": [74.99, 9.05, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.5}
+
+[KOWALSKI — T+450s]: Tried to radio ALPHA for a status check.
+Response was nominal. All green on their end.
+So why do I have a bad feeling?
+
 [SEQ:04500] RECV | SYS_TS:50450.000 | CHK:0x7C | PLD:{"uav": "ALPHA", "t_local": 50445.5, "pos": [75.0, 9.07, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.5}
 [SEQ:04500_B] RECV | SYS_TS:50450.000 | CHK:0x86 | PLD:{"uav": "BRAVO", "t_local": 50450.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:04501] RECV | SYS_TS:50450.100 | CHK:0x7E | PLD:{"uav": "ALPHA", "t_local": 50445.599, "pos": [75.01, 9.09, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.5}
@@ -5759,6 +5795,10 @@ LISTENING ON UDP PORT 14550...
 [SEQ:04797] RECV | SYS_TS:50479.700 | CHK:0xC4 | PLD:{"uav": "ALPHA", "t_local": 50474.903, "pos": [77.97, 10.89, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.2}
 [SEQ:04798] RECV | SYS_TS:50479.800 | CHK:0xC5 | PLD:{"uav": "ALPHA", "t_local": 50475.002, "pos": [77.98, 10.91, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.2}
 [SEQ:04799] RECV | SYS_TS:50479.900 | CHK:0xC6 | PLD:{"uav": "ALPHA", "t_local": 50475.101, "pos": [77.99, 10.93, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.2}
+
+[KOWALSKI — T+480s]: Come on. What am I missing?
+BRAVO is fine. ALPHA is fine. Everything looks fine.
+
 [SEQ:04800] RECV | SYS_TS:50480.000 | CHK:0xC7 | PLD:{"uav": "ALPHA", "t_local": 50475.2, "pos": [78.0, 10.95, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.2}
 [SEQ:04800_B] RECV | SYS_TS:50480.000 | CHK:0xD1 | PLD:{"uav": "BRAVO", "t_local": 50480.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:04801] RECV | SYS_TS:50480.100 | CHK:0xC9 | PLD:{"uav": "ALPHA", "t_local": 50475.299, "pos": [78.01, 10.96, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.2}
@@ -5939,6 +5979,9 @@ LISTENING ON UDP PORT 14550...
 [SEQ:04947] RECV | SYS_TS:50494.700 | CHK:0x6A | PLD:{"uav": "ALPHA", "t_local": 50489.753, "pos": [79.47, 10.74, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.05}
 [SEQ:04948] RECV | SYS_TS:50494.800 | CHK:0x6B | PLD:{"uav": "ALPHA", "t_local": 50489.852, "pos": [79.48, 10.71, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.05}
 [SEQ:04949] RECV | SYS_TS:50494.900 | CHK:0x6C | PLD:{"uav": "ALPHA", "t_local": 50489.951, "pos": [79.49, 10.67, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.05}
+
+[KOWALSKI — T+495s]: Oh no.
+
 [SEQ:04950] RECV | SYS_TS:50495.000 | CHK:0x6D | PLD:{"uav": "ALPHA", "t_local": 50490.05, "pos": [79.5, 10.63, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.05}
 [SEQ:04950_B] RECV | SYS_TS:50495.000 | CHK:0x77 | PLD:{"uav": "BRAVO", "t_local": 50495.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
 [SEQ:04951] RECV | SYS_TS:50495.100 | CHK:0x6F | PLD:{"uav": "ALPHA", "t_local": 50490.149, "pos": [79.51, 10.59, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 0, "bat": 19.05}
@@ -6003,4 +6046,7 @@ LISTENING ON UDP PORT 14550...
 [SEQ:04999] ERR  | SYS_TS:50499.900 | PACKET_REJECTED: STALE_TELEMETRY (DELTA > 5.0s)
 [SEQ:05000] RECV | SYS_TS:50500.000 | CHK:0xA4 | PLD:{"uav": "ALPHA", "t_local": 50495.0, "pos": [80.0, 9.03, 15.5], "vel": [0.1, 0.0, 0.0], "prox": 1, "bat": 19.0}
 [SEQ:05000_B] RECV | SYS_TS:50500.000 | CHK:0xAE | PLD:{"uav": "BRAVO", "t_local": 50500.0, "pos": [12.0, 44.1, 20.0], "status": "LOITER"}
+
 === FATAL KINETIC IMPACT: CONNECTION SEVERED ===
+
+[END OF RECORDING]
