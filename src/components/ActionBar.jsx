@@ -25,9 +25,16 @@ export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinishe
             <div className="flex items-center space-x-3 w-1/2 justify-end relative z-10">
                 {/* Hint */}
                 {hint && (
-                    <div className="flex items-center space-x-1 text-[10px] text-green-800 max-w-[180px]" title={hint}>
+                    <div className="group relative flex items-center space-x-1 text-[10px] text-green-800 cursor-help">
                         <HelpCircle className="w-3 h-3 shrink-0" />
-                        <span className="truncate tracking-wider">{hint}</span>
+                        <span className="tracking-wider font-bold group-hover:text-green-500 transition-colors">HINT</span>
+
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-black/90 border border-green-900/60 text-green-400 text-xs rounded shadow-[0_0_10px_rgba(0,255,65,0.1)] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center backdrop-blur-sm">
+                            {hint}
+                            {/* Arrow */}
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-green-900/60"></div>
+                        </div>
                     </div>
                 )}
 
