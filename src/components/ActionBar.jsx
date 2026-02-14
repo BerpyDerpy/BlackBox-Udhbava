@@ -44,8 +44,13 @@ export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinishe
                         type="text"
                         value={answer}
                         onChange={(e) => onAnswerChange(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && isExecutionFinished) {
+                                onSubmit();
+                            }
+                        }}
                         placeholder="IDENTIFY ANOMALY >"
-                        className="w-full bg-black/70 border border-green-900/30 rounded-sm py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-green-500/60 focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] text-green-300 placeholder-green-900/40 transition-all duration-300"
+                        className="w-full bg-black/70 border border-green-900/30 rounded-full py-2 pl-9 pr-4 text-sm focus:outline-none focus:border-green-500/60 focus:shadow-[0_0_10px_rgba(0,255,65,0.1)] text-green-300 placeholder-green-900/40 transition-all duration-300"
                     />
                 </div>
                 <button
@@ -60,7 +65,7 @@ export default function ActionBar({ onRun, loading, onSubmit, isExecutionFinishe
                     <Send className="w-3 h-3" />
                 </button>
             </div>
-
         </div>
+
     )
 }

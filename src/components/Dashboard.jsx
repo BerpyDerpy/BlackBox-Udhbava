@@ -6,7 +6,8 @@ import ActionBar from './ActionBar'
 import HelpModal from './HelpModal'
 import { LEVEL_META, TOTAL_LEVELS, MOCK_TERMINAL_WELCOME, loadLevelLog, checkAnswer } from '../lib/LevelData'
 import { supabase } from '../lib/supabase'
-import { Shield, LogOut, HelpCircle, Timer, Trophy } from 'lucide-react'
+import { Shield, LogOut, HelpCircle, Timer, Trophy, Terminal } from 'lucide-react'
+import { sfx } from '../lib/audio'
 
 export default function Dashboard({ user, onToggleAdmin, onLogout }) {
     const [currentLevel, setCurrentLevel] = useState(user.level || 1)
@@ -164,6 +165,7 @@ clean_data()`
         if (nextLevel > TOTAL_LEVELS) {
             addLog('> ★ ALL LEVELS COMPLETED! YOU HAVE MASTERED THE BLACK BOX.')
             setSubmitFeedback({ type: 'success', msg: 'ALL LEVELS COMPLETED! CONGRATULATIONS, OPERATOR.' })
+            sfx.playSuccess()
             return
         }
 
@@ -198,6 +200,7 @@ clean_data()`
             setTotalScore(newTotal)
             setSubmitFeedback({ type: 'success', msg: `CORRECT! +${levelScore} PTS (${formatTime(elapsedSeconds)})` })
             addLog(`> ✓ SUBMISSION ACCEPTED — SCORE: +${levelScore}`)
+            sfx.playSuccess()
 
             // Persist to Supabase and advance
             persistScore(newTotal, currentLevel + 1)
@@ -205,6 +208,7 @@ clean_data()`
         } else {
             setSubmitFeedback({ type: 'error', msg: `INCORRECT. TRY AGAIN.` })
             addLog(`> ✗ SUBMISSION REJECTED: "${answer}" does not match.`)
+            sfx.playFailure()
         }
     }
 
@@ -213,6 +217,18 @@ clean_data()`
         const secs = String(s % 60).padStart(2, '0')
         return `${mins}:${secs}`
     }
+
+
+    // Effect: Close feedback automatically after a few seconds if it's just a message
+    useEffect(() => {
+        if (submitFeedback) {
+            const timer = setTimeout(() => {
+                // Optional: Auto-dismiss feedback if desired, or keep until next action
+                // setSubmitFeedback(null) 
+            }, 3000)
+            return () => clearTimeout(timer)
+        }
+    }, [submitFeedback])
 
     return (
         <div className="h-screen flex flex-col bg-black text-green-500 overflow-hidden relative">
@@ -224,12 +240,17 @@ clean_data()`
             {/* Header / Status Bar */}
             <div className="h-9 border-b border-green-900/40 flex items-center justify-between px-4 bg-gray-950/80 text-xs backdrop-blur-sm shrink-0 relative z-10">
                 <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 mr-4 border-r border-green-900/40 pr-4">
+                        <Terminal className="w-4 h-4 text-green-500" />
+                        <span className="font-bold text-green-400 tracking-widest text-sm">BLACKBOX</span>
+                        <span className="text-[10px] text-green-700 font-mono tracking-tighter">UDHBAVA 3.0</span>
+                    </div>
+
                     <span className="font-bold text-green-400 text-glow tracking-wider">
                         OPERATOR: {user.rollNo}
                     </span>
                     <span className="text-green-800">│</span>
                     <span className="text-green-700 tracking-wider">LEVEL: {currentLevel} / {TOTAL_LEVELS}</span>
-                    <span className="text-green-800">│</span>
                     <span className="text-green-800">│</span>
                     <span className="flex items-center gap-1.5 text-green-600 tracking-wider">
                         <Timer className="w-3 h-3" />
@@ -290,24 +311,23 @@ clean_data()`
                 </div>
             </div>
 
-            {/* Submit Feedback Banner */}
+            {/* Full Screen Feedback Overlay */}
             {submitFeedback && (
-                <div className={`px-4 py-2.5 text-sm font-bold tracking-wider flex items-center justify-between relative z-10 ${submitFeedback.type === 'success'
-                    ? 'bg-green-950/50 border-b border-green-700/40 text-green-400'
-                    : 'bg-red-950/50 border-b border-red-700/40 text-red-400'
-                    }`}>
-                    <span>
-                        <span className={submitFeedback.type === 'success' ? 'text-green-600' : 'text-red-600'}>
-                            [{submitFeedback.type === 'success' ? 'SUCCESS' : 'FAILED'}]:
-                        </span>{' '}
-                        {submitFeedback.msg}
-                    </span>
-                    <button
-                        onClick={() => setSubmitFeedback(null)}
-                        className="text-green-800 hover:text-green-400 transition-colors text-lg leading-none"
-                    >
-                        ×
-                    </button>
+                <div className={`absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300 pointer-events-none`}>
+                    <div className={`p-8 border-2 ${submitFeedback.type === 'success'
+                        ? 'border-green-500 bg-green-950/90 text-green-400 shadow-[0_0_50px_rgba(34,197,94,0.5)]'
+                        : 'border-red-500 bg-red-950/90 text-red-500 shadow-[0_0_50px_rgba(239,68,68,0.5)]'
+                        } max-w-2xl w-full text-center transform scale-100 animate-in zoom-in-95 duration-200`}>
+                        <h2 className="text-4xl font-bold mb-4 tracking-widest uppercase">
+                            {submitFeedback.type === 'success' ? 'ACCESS GRANTED' : 'ACCESS DENIED'}
+                        </h2>
+                        <p className="text-xl font-mono mb-6">{submitFeedback.msg}</p>
+
+                        <div className="w-full h-1 bg-black/30 rounded-full overflow-hidden">
+                            <div className={`h-full animate-progress-shrink w-full origin-left ${submitFeedback.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                                }`} style={{ animationDuration: '2s' }}></div>
+                        </div>
+                    </div>
                 </div>
             )}
 

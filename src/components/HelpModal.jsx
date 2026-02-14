@@ -161,7 +161,7 @@ for line in lines:
                             <Rule
                                 num="01"
                                 title="AI IS ALLOWED"
-                                desc="You may use AI tools (ChatGPT, Copilot, etc.) to help write your Python scripts. However, your score will be lower — see scoring below."
+                                desc="You may use AI tools (ChatGPT, Copilot, etc.) to help write your Python scripts."
                                 color="yellow"
                             />
                             <Rule
