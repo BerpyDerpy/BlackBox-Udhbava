@@ -10,7 +10,7 @@ export const LEVEL_META = {
         keywords: ['1404', '1405', 'temp', 'temperature', 'motor'],
     },
     2: {
-        file: '/levels/level2_medium.txt',
+        file: '/levels/level_2_medium_v2.txt',
         label: 'MEDIUM',
         hint: 'The raw sensor data is hiding the true trend. Apply a moving average filter to the Inlet Pressure to find when it crosses the critical cavitation threshold (300).',
         keywords: ['12.000', '12', '12.00', 'cavitation', 'moving average'],
