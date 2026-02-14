@@ -4,19 +4,19 @@
 
 export const LEVEL_META = {
     1: {
-        file: '/levels/level1_easy.txt',
+        file: '/levels/level_1_easy.txt',
         label: 'EASY',
         hint: 'Strip the noise, extract the values, and find the timestamp of the thermal spike.',
         keywords: ['1404', '1405', 'temp', 'temperature', 'motor'],
     },
     2: {
-        file: '/levels/level2_medium.txt',
+        file: '/levels/level_2_medium.txt',
         label: 'MEDIUM',
         hint: 'Decode the hexadecimal payloads and graph or calculate the delta between the two values to find the physical anomaly.',
         keywords: ['oscillation', 'resonance', 'instability', 'pogo', '1.500', '1.5'],
     },
     3: {
-        file: '/levels/level3_hard.txt',
+        file: '/levels/level_3_hard_v2.txt',
         label: 'HARD',
         hint: 'Filter for the ALPHA unit and mathematically compare its local telemetry timestamps against the main server timestamps.',
         keywords: ['drift', 'desync', 'clock', 'time', 'sync', 'synchronization'],
